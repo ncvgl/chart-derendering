@@ -41,6 +41,22 @@ Provide your answer concisely. Use this format:
 ... your final answer ...
 </answer>"""
 
+DEVILS_ADVOCATE_PROMPT = """Look at the chart image at {img_path}.
+
+Question: {question}
+
+A colleague answered "{first_answer}" but you think they may be wrong.
+Look very carefully at the chart and consider alternative answers.
+Check if the colleague might have misread the chart, confused similar concepts, or looked at the wrong visual element.
+
+What is the CORRECT answer?
+<think>
+... your reasoning about why the colleague might be wrong ...
+</think>
+<answer>
+... your final answer (may be the same if you agree) ...
+</answer>"""
+
 CRITIC_PROMPT = """A model was asked to answer a question about a chart image. Review its reasoning and answer critically.
 
 Question: {question}
@@ -168,7 +184,7 @@ def run_claude(cmd, timeout=300):
     return raw_output, total_time
 
 
-def run_one(idx, example, model, tools, exp_id, answer_prompt, effort, critic=False):
+def run_one(idx, example, model, tools, exp_id, answer_prompt, effort, critic=False, devils_advocate=False):
     """Run a single question and return result dict."""
     img_path = os.path.join(BASE_DIR, "data/chartmuseum", example['image'])
     question = example['question']
@@ -200,6 +216,31 @@ def run_one(idx, example, model, tools, exp_id, answer_prompt, effort, critic=Fa
     # Save step 1 session
     with open(session_file, 'w') as f:
         json.dump(session, f, indent=2)
+
+    # Devil's advocate pass (if enabled and step 1 didn't timeout)
+    if devils_advocate and pred and pred != "TIMEOUT":
+        da_prompt = DEVILS_ADVOCATE_PROMPT.format(
+            img_path=img_path, question=question, first_answer=pred[:100])
+        da_cmd = ["claude", "-p", "--verbose", "--model", model,
+                  "--output-format", "stream-json", "--no-session-persistence"]
+        if tools == "":
+            da_cmd.extend(["--tools", ""])
+        else:
+            da_cmd.extend(["--allowedTools", tools])
+        if effort:
+            da_cmd.extend(["--effort", effort])
+        da_cmd.extend(["--", da_prompt])
+
+        da_raw, da_time = run_claude(da_cmd)
+        da_text, da_session = parse_stream_json(da_raw)
+        answer_time += da_time
+
+        with open(os.path.join(sessions_dir, f"{session_id}_da.json"), 'w') as f:
+            json.dump(da_session, f, indent=2)
+
+        if da_text and da_text != "TIMEOUT":
+            answer_text = da_text
+            pred = extract_answer(answer_text)
 
     # Steps 2-3: Critic loop (if enabled and step 1 didn't timeout)
     critique_text = ""
@@ -291,6 +332,7 @@ def main():
     parser.add_argument("--prompt", default=None, help="Custom answer prompt (use {img_path} and {question} placeholders)")
     parser.add_argument("--effort", default=None, choices=["low", "medium", "high", "max"], help="Effort/thinking level")
     parser.add_argument("--critic", action="store_true", help="Enable Opus critic step between answer and revision")
+    parser.add_argument("--devils-advocate", action="store_true", help="Two-pass: answer then challenge with devil's advocate")
     args = parser.parse_args()
 
     answer_prompt = args.prompt if args.prompt else DEFAULT_PROMPT
@@ -328,7 +370,7 @@ def main():
     results = []
     with ThreadPoolExecutor(max_workers=args.parallelism) as pool:
         futures = {
-            pool.submit(run_one, i, ex, args.model, args.tools, exp_id, answer_prompt, args.effort, args.critic): i
+            pool.submit(run_one, i, ex, args.model, args.tools, exp_id, answer_prompt, args.effort, args.critic, args.devils_advocate): i
             for i, ex in subset
         }
         for future in as_completed(futures):
@@ -352,6 +394,7 @@ def main():
         "tools": tools_label,
         "effort": args.effort or "default",
         "critic": args.critic,
+        "devils_advocate": args.devils_advocate,
         "prompt": answer_prompt,
         "subset_indices": indices,
         "seed": args.seed,
