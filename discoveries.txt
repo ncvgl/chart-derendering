@@ -1,0 +1,1 @@
+~20% of questions flip between correct/incorrect across identical reruns (same model, same prompt, same seed). Overall score stays stable but individual answers are stochastic. (Observed: 2/10 flipped between sonnet_read v1 and v2, both scored 7/10.)

@@ -1,0 +1,143 @@
+{
+  "experiment_id": "20260409_1351_haiku_blind",
+  "model": "haiku",
+  "tools": "none",
+  "subset_indices": [
+    3,
+    11,
+    13,
+    14,
+    17,
+    28,
+    31,
+    35,
+    69,
+    81
+  ],
+  "seed": 42,
+  "score": 0,
+  "total": 10,
+  "accuracy": 0.0,
+  "results": [
+    {
+      "index": 3,
+      "session_id": "20260409_1351_haiku_blind_q3",
+      "session_file": "claude_sessions/20260409_1351_haiku_blind_q3.json",
+      "image": "images/car-color-popularity.png",
+      "question": "How many colors were always ranked above red?",
+      "gold": "2",
+      "prediction": "Once I can see or understand the chart data, I'll be able to answer your question about how many colors were always ranked above red.",
+      "correct": false,
+      "answer_time": 26.6,
+      "judge_time": 4.1
+    },
+    {
+      "index": 11,
+      "session_id": "20260409_1351_haiku_blind_q11",
+      "session_file": "claude_sessions/20260409_1351_haiku_blind_q11.json",
+      "image": "images/countryDrink.png",
+      "question": "Which country has the highest percentage of wine in its total alcohol consumption?",
+      "gold": "Chile",
+      "prediction": "Alternatively, if this is part of a derendering/analysis task, I could help analyze the underlying data if you can point me to the data files.",
+      "correct": false,
+      "answer_time": 13.8,
+      "judge_time": 4.4
+    },
+    {
+      "index": 13,
+      "session_id": "20260409_1351_haiku_blind_q13",
+      "session_file": "claude_sessions/20260409_1351_haiku_blind_q13.json",
+      "image": "images/countryDrink.png",
+      "question": "Which country shows the most dramatic drop in the percentage of spirits consumption in a very short period of time?",
+      "gold": "Costa Rica",
+      "prediction": "Once I can see the chart or get its details, I'll be able to identify which country shows the most dramatic drop in spirits consumption.",
+      "correct": false,
+      "answer_time": 15.0,
+      "judge_time": 5.0
+    },
+    {
+      "index": 14,
+      "session_id": "20260409_1351_haiku_blind_q14",
+      "session_file": "claude_sessions/20260409_1351_haiku_blind_q14.json",
+      "image": "images/ageEstimation.png",
+      "question": "You are presented with a scatter plot where the median age is the 50th percentile age for all living people with the given name and the interquartile range is the 25th to the 75th percentile. Now we define a name is *timeless* if the name is one that has been consistently given to people over a long period.  Based on the age statistics in the graph, which name is the most *timeless*? ",
+      "gold": "Lucille",
+      "prediction": "Once I have that information, I can analyze which name is most \"timeless\" based on the age statistics.",
+      "correct": false,
+      "answer_time": 14.8,
+      "judge_time": 5.2
+    },
+    {
+      "index": 17,
+      "session_id": "20260409_1351_haiku_blind_q17",
+      "session_file": "claude_sessions/20260409_1351_haiku_blind_q17.json",
+      "image": "images/foods-cost-vs-caloric-density-v0-yx4vtgbxa4he1.png",
+      "question": "Suppose Bob has $5 and he want to eat a type of Meats that can maximize the calories, which meat in the Meats category should Bob buy?",
+      "gold": "Pork belly",
+      "prediction": "This will allow me to calculate which meat Bob can buy the most calories of with his $5 budget.",
+      "correct": false,
+      "answer_time": 17.6,
+      "judge_time": 4.4
+    },
+    {
+      "index": 28,
+      "session_id": "20260409_1351_haiku_blind_q28",
+      "session_file": "claude_sessions/20260409_1351_haiku_blind_q28.json",
+      "image": "images/VOTD.png",
+      "question": "During which day of the week does the paper plane show the highest range of flying distance?",
+      "gold": "Friday",
+      "prediction": "Alternatively, you might check your environment setup or try accessing Claude Code through a different interface (web at claude.ai/code, desktop app, or VS Code extension) where full file tools may be available.",
+      "correct": false,
+      "answer_time": 14.8,
+      "judge_time": 4.0
+    },
+    {
+      "index": 31,
+      "session_id": "20260409_1351_haiku_blind_q31",
+      "session_file": "claude_sessions/20260409_1351_haiku_blind_q31.json",
+      "image": "images/femalNobel.png",
+      "question": "Each colored leaf on the chronologically arranged wreath represents a female Nobel laureate, with the leaf's color indicating the prize category. What are the prize categories where three consecutive female Nobel laureates receive prizes in the same category?",
+      "gold": "Medicine and Peace",
+      "prediction": "Could you check if there's accompanying data or documentation in the `/Users/mugen/Codebase/chart_derendering/` directory that describes the female Nobel laureates by category and chronological order?",
+      "correct": false,
+      "answer_time": 15.2,
+      "judge_time": 4.7
+    },
+    {
+      "index": 35,
+      "session_id": "20260409_1351_haiku_blind_q35",
+      "session_file": "claude_sessions/20260409_1351_haiku_blind_q35.json",
+      "image": "images/truestory_zs.png",
+      "question": "Which movie contains the highest percentage of \"UNKNOWN\"  scenes in its timeline?",
+      "gold": "Bridge of Spies",
+      "prediction": "Alternatively, if you have access to the data file or can describe the chart contents, I can help you identify which movie has the highest percentage of UNKNOWN scenes.",
+      "correct": false,
+      "answer_time": 12.3,
+      "judge_time": 4.7
+    },
+    {
+      "index": 69,
+      "session_id": "20260409_1351_haiku_blind_q69",
+      "session_file": "claude_sessions/20260409_1351_haiku_blind_q69.json",
+      "image": "images/15619.png",
+      "question": "What is the difference in months between when Tesla's stock price was highest and lowest?",
+      "gold": "4 months",
+      "prediction": "Once I can see the image or get its details, I'll be able to calculate the month difference between the highest and lowest stock prices.",
+      "correct": false,
+      "answer_time": 27.4,
+      "judge_time": 7.9
+    },
+    {
+      "index": 81,
+      "session_id": "20260409_1351_haiku_blind_q81",
+      "session_file": "claude_sessions/20260409_1351_haiku_blind_q81.json",
+      "image": "images/climate_threat.png",
+      "question": "This map shows the primary climate threats facing different regions of the United States. Which type of climate threat affects the least land areas?",
+      "gold": "Sea level rise",
+      "prediction": "With that information, I can help you determine which climate threat affects the least land area.",
+      "correct": false,
+      "answer_time": 13.4,
+      "judge_time": 6.9
+    }
+  ]
+}

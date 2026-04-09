@@ -1,0 +1,7 @@
+.DS_Store
+.claude/
+archive/
+data/
+venv/
+__pycache__/
+*.lock

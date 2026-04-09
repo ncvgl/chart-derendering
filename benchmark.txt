@@ -1,0 +1,8 @@
+0/10 (0.0%) | 2026-04-09 13:52 | 20260409_1351_haiku_blind | model=haiku | tools=none | effort=default | n=10 seed=42
+0/10 (0.0%) | 2026-04-09 14:09 | 20260409_1408_haiku_blind_guess | model=haiku | tools=none | effort=default | n=10 seed=42
+3/10 (30.0%) | 2026-04-09 14:33 | 20260409_1432_haiku_read | model=haiku | tools=Read | effort=default | n=10 seed=42
+7/10 (70.0%) | 2026-04-09 14:41 | 20260409_1438_sonnet_read | model=sonnet | tools=Read | effort=default | n=10 seed=42
+6/10 (60.0%) | 2026-04-09 14:43 | 20260409_1441_opus_read | model=opus | tools=Read | effort=default | n=10 seed=42
+4/10 (40.0%) | 2026-04-09 14:44 | 20260409_1443_opus_read_low_effort | model=opus | tools=Read | effort=low | n=10 seed=42
+5/10 (50.0%) | 2026-04-09 14:47 | 20260409_1444_opus_read_max_effort | model=opus | tools=Read | effort=max | n=10 seed=42
+7/10 (70.0%) | 2026-04-09 14:59 | 20260409_1455_sonnet_read_v2 | model=sonnet | tools=Read | effort=default | n=10 seed=42 | 3m41s
