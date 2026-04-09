@@ -2,6 +2,7 @@
 .claude/
 archive/
 data/
+experiments/
 venv/
 __pycache__/
 *.lock
