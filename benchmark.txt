@@ -6,3 +6,16 @@
 4/10 (40.0%) | 2026-04-09 14:44 | 20260409_1443_opus_read_low_effort | model=opus | tools=Read | effort=low | n=10 seed=42
 5/10 (50.0%) | 2026-04-09 14:47 | 20260409_1444_opus_read_max_effort | model=opus | tools=Read | effort=max | n=10 seed=42
 7/10 (70.0%) | 2026-04-09 14:59 | 20260409_1455_sonnet_read_v2 | model=sonnet | tools=Read | effort=default | n=10 seed=42 | 3m41s
+1/1 (100.0%) | 2026-04-09 16:38 | 20260409_1633_q13_sonnet_bash_run1 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 4m58s
+1/1 (100.0%) | 2026-04-09 16:39 | 20260409_1638_q13_sonnet_bash_run2 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 1m30s
+0/1 (0.0%) | 2026-04-09 16:44 | 20260409_1639_q13_sonnet_bash_run3 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 5m04s
+0/1 (0.0%) | 2026-04-09 16:55 | 20260409_1654_q13_haiku_bash_run1 | model=haiku | tools=Read,Bash | effort=default | n=1 seed=42 | 1m03s
+0/1 (0.0%) | 2026-04-09 16:56 | 20260409_1655_q13_haiku_bash_run2 | model=haiku | tools=Read,Bash | effort=default | n=1 seed=42 | 1m07s
+0/1 (0.0%) | 2026-04-09 16:58 | 20260409_1656_q13_haiku_bash_run3 | model=haiku | tools=Read,Bash | effort=default | n=1 seed=42 | 2m35s
+7/10 (70.0%) | 2026-04-09 17:10 | 20260409_1703_sonnet_read_bash | model=sonnet | tools=Read,Bash | effort=default | n=10 seed=42 | 6m50s
+0/1 (0.0%) | 2026-04-09 18:46 | 20260409_1840_q28_sonnet_critic | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 6m24s
+0/1 (0.0%) | 2026-04-09 18:54 | 20260409_1847_q28_sonnet_critic_v2 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 7m32s
+39/83 (47.0%) | 2026-04-09 19:45 | 20260409_1910_sonnet_read_full83 | model=sonnet | tools=Read | effort=default | n=83 seed=42 | 34m22s
+6/10 (60.0%) | 2026-04-09 19:54 | 20260409_1945_sonnet_crop_10failures | model=sonnet | tools=Read,Bash | effort=default | n=10 seed=42 | 8m36s
+1/4 (25.0%) | 2026-04-09 20:00 | 20260409_1954_sonnet_critic_remaining4 | model=sonnet | tools=Read,Bash | effort=default | n=4 seed=42 | 6m29s
+44/83 (53.0%) | 2026-04-09 20:55 | 20260409_2001_sonnet_bash_full83 | model=sonnet | tools=Read,Bash | effort=default | n=83 seed=42 | 53m54s

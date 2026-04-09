@@ -136,36 +136,17 @@ def parse_stream_json(raw_output):
     return result_text, session
 
 
-MAX_STALL_RETRIES = 2
-
-def is_stall_timeout(raw_output):
-    """Check if a timeout was a stall (0 events, never started) vs legitimate."""
-    _, session = parse_stream_json(raw_output)
-    return len(session["events"]) == 0 and session["system"] is None
-
-
 def run_claude(cmd, timeout=300):
-    """Run a claude -p command with retry on stall timeouts."""
-    total_time = 0
-    for attempt in range(1 + MAX_STALL_RETRIES):
-        t0 = time.time()
-        try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
-            raw_output = result.stdout
-        except subprocess.TimeoutExpired:
-            raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
-        except Exception as e:
-            raw_output = json.dumps({"type": "result", "result": f"ERROR: {e}", "is_error": True})
-        elapsed = time.time() - t0
-        total_time += elapsed
-
-        # Only retry if it was a stall (never started), not a real timeout
-        if is_stall_timeout(raw_output) and "TIMEOUT" in raw_output and attempt < MAX_STALL_RETRIES:
-            wait = 10 * (attempt + 1)  # 10s, 20s, 30s...
-            time.sleep(wait)
-            continue
-        break
-    return raw_output, total_time
+    """Run a claude -p command and return (raw_output, elapsed_time)."""
+    t0 = time.time()
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        raw_output = result.stdout
+    except subprocess.TimeoutExpired:
+        raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
+    except Exception as e:
+        raw_output = json.dumps({"type": "result", "result": f"ERROR: {e}", "is_error": True})
+    return raw_output, time.time() - t0
 
 
 def run_one(idx, example, model, tools, exp_id, answer_prompt, effort, critic=False):

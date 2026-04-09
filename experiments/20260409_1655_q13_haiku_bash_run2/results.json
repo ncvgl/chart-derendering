@@ -1,0 +1,29 @@
+{
+  "experiment_id": "20260409_1655_q13_haiku_bash_run2",
+  "model": "haiku",
+  "tools": "Read,Bash",
+  "effort": "default",
+  "prompt": "Look at the chart image at {img_path}.\n\nQuestion: {question}\n\nYou have a crop tool to zoom into any region of the image at native resolution:\n  python3 /Users/mugen/Codebase/chart_derendering/crop.py {img_path} x1 y1 x2 y2 /tmp/crop.png\nThen Read /tmp/crop.png to inspect the cropped area. Use unique filenames for multiple crops.\n\nProvide your answer concisely. Use this format:\n\n<think>\n... your reasoning ...\n</think>\n<answer>\n... your final answer ...\n</answer>",
+  "subset_indices": [
+    13
+  ],
+  "seed": 42,
+  "score": 0,
+  "total": 1,
+  "accuracy": 0.0,
+  "results": [
+    {
+      "index": 13,
+      "session_id": "q13",
+      "session_file": "sessions/q13.json",
+      "image": "images/countryDrink.png",
+      "question": "Which country shows the most dramatic drop in the percentage of spirits consumption in a very short period of time?",
+      "gold": "Costa Rica",
+      "prediction": "**Chile** shows the most dramatic drop in the percentage of spirits consumption. The red (spirits) area is substantial in 1965 but drops dramatically to almost nothing by 2015, representing a severe decline in spirits consumption relative to other beverages over this period.",
+      "correct": false,
+      "num_turns": 20,
+      "answer_time": 61.1,
+      "judge_time": 6.0
+    }
+  ]
+}

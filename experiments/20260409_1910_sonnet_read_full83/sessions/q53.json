@@ -1,0 +1,9 @@
+{
+  "system": null,
+  "events": [],
+  "result": {
+    "type": "result",
+    "result": "TIMEOUT",
+    "is_error": true
+  }
+}

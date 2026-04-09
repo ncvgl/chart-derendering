@@ -41,47 +41,6 @@ Provide your answer concisely. Use this format:
 ... your final answer ...
 </answer>"""
 
-CRITIC_PROMPT = """A model was asked to answer a question about a chart image. Review its reasoning and answer critically.
-
-Question: {question}
-
-Model's response:
-{response}
-
-Be a skeptical reviewer. Consider:
-- Are there alternative interpretations of the question the model may have missed?
-- Did the model confuse similar concepts (e.g. average vs range, total vs percentage)?
-- Could the model be looking at the wrong part of the chart or misidentifying visual elements?
-- Is the reasoning logically sound, or does it make unjustified leaps?
-
-Point out specific weaknesses and suggest what the model should re-examine. Be concise and direct."""
-
-REVISE_PROMPT = """Look at the chart image at {img_path}.
-
-Question: {question}
-
-You previously answered this question. Here was your response:
-{response}
-
-A reviewer found these potential issues with your analysis:
-{critique}
-
-Re-examine the chart with the reviewer's feedback in mind. You have access to the crop tool and can look at specific regions again.
-
-You can crop any region of the image at native resolution using:
-  python3 """ + CROP_TOOL_PATH + """ {img_path} x1 y1 x2 y2 /tmp/crop.png
-Then Read /tmp/crop.png to inspect. Use unique filenames.
-Do NOT use Bash for anything other than running crop.py.
-
-Provide your revised (or confirmed) answer:
-
-<think>
-... your reasoning, addressing the reviewer's points ...
-</think>
-<answer>
-... your final answer ...
-</answer>"""
-
 JUDGE_PROMPT = """You are provided with a question and two answers. Determine if they are equivalent.
 
 Guidelines:
@@ -136,39 +95,7 @@ def parse_stream_json(raw_output):
     return result_text, session
 
 
-MAX_STALL_RETRIES = 2
-
-def is_stall_timeout(raw_output):
-    """Check if a timeout was a stall (0 events, never started) vs legitimate."""
-    _, session = parse_stream_json(raw_output)
-    return len(session["events"]) == 0 and session["system"] is None
-
-
-def run_claude(cmd, timeout=300):
-    """Run a claude -p command with retry on stall timeouts."""
-    total_time = 0
-    for attempt in range(1 + MAX_STALL_RETRIES):
-        t0 = time.time()
-        try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
-            raw_output = result.stdout
-        except subprocess.TimeoutExpired:
-            raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
-        except Exception as e:
-            raw_output = json.dumps({"type": "result", "result": f"ERROR: {e}", "is_error": True})
-        elapsed = time.time() - t0
-        total_time += elapsed
-
-        # Only retry if it was a stall (never started), not a real timeout
-        if is_stall_timeout(raw_output) and "TIMEOUT" in raw_output and attempt < MAX_STALL_RETRIES:
-            wait = 10 * (attempt + 1)  # 10s, 20s, 30s...
-            time.sleep(wait)
-            continue
-        break
-    return raw_output, total_time
-
-
-def run_one(idx, example, model, tools, exp_id, answer_prompt, effort, critic=False):
+def run_one(idx, example, model, tools, exp_id, answer_prompt, effort):
     """Run a single question and return result dict."""
     img_path = os.path.join(BASE_DIR, "data/chartmuseum", example['image'])
     question = example['question']
@@ -192,58 +119,24 @@ def run_one(idx, example, model, tools, exp_id, answer_prompt, effort, critic=Fa
         cmd.extend(["--effort", effort])
     cmd.extend(["--", prompt])
 
-    # Step 1: Run answerer
-    raw_output, answer_time = run_claude(cmd)
+    # Run answerer
+    t0 = time.time()
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+        raw_output = result.stdout
+    except subprocess.TimeoutExpired:
+        raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
+    except Exception as e:
+        raw_output = json.dumps({"type": "result", "result": f"ERROR: {e}", "is_error": True})
+    answer_time = time.time() - t0
+
+    # Parse answer from stream
     answer_text, session = parse_stream_json(raw_output)
     pred = extract_answer(answer_text)
 
-    # Save step 1 session
+    # Save structured session as JSON
     with open(session_file, 'w') as f:
         json.dump(session, f, indent=2)
-
-    # Steps 2-3: Critic loop (if enabled and step 1 didn't timeout)
-    critique_text = ""
-    if critic and answer_text and answer_text != "TIMEOUT":
-        # Step 2: Opus critic (no tools, text only)
-        critic_prompt = CRITIC_PROMPT.format(question=question, response=answer_text)
-        critic_cmd = ["claude", "-p", "--model", "opus", "--tools", "",
-                      "--effort", "high", "--no-session-persistence",
-                      "--output-format", "stream-json", "--verbose",
-                      "--", critic_prompt]
-        critic_raw, critic_time = run_claude(critic_cmd, timeout=120)
-        critique_text, critic_session = parse_stream_json(critic_raw)
-        answer_time += critic_time
-
-        # Save critic session
-        with open(os.path.join(sessions_dir, f"{session_id}_critic.json"), 'w') as f:
-            json.dump(critic_session, f, indent=2)
-
-        if critique_text and critique_text != "TIMEOUT":
-            # Step 3: Sonnet revises with critique
-            revise_prompt = REVISE_PROMPT.format(
-                img_path=img_path, question=question,
-                response=answer_text, critique=critique_text)
-            revise_cmd = ["claude", "-p", "--verbose", "--model", model,
-                          "--output-format", "stream-json", "--no-session-persistence"]
-            if tools == "":
-                revise_cmd.extend(["--tools", ""])
-            else:
-                revise_cmd.extend(["--allowedTools", tools])
-            if effort:
-                revise_cmd.extend(["--effort", effort])
-            revise_cmd.extend(["--", revise_prompt])
-
-            revise_raw, revise_time = run_claude(revise_cmd)
-            revise_text, revise_session = parse_stream_json(revise_raw)
-            answer_time += revise_time
-
-            # Save revise session
-            with open(os.path.join(sessions_dir, f"{session_id}_revise.json"), 'w') as f:
-                json.dump(revise_session, f, indent=2)
-
-            if revise_text and revise_text != "TIMEOUT":
-                answer_text = revise_text
-                pred = extract_answer(answer_text)
 
     # Run judge (haiku, no tools, plain text output)
     judge_prompt = JUDGE_PROMPT.format(question=question, pred=pred, gold=gold)
@@ -290,7 +183,6 @@ def main():
     parser.add_argument("--seed", type=int, default=42, help="Random seed for subset selection")
     parser.add_argument("--prompt", default=None, help="Custom answer prompt (use {img_path} and {question} placeholders)")
     parser.add_argument("--effort", default=None, choices=["low", "medium", "high", "max"], help="Effort/thinking level")
-    parser.add_argument("--critic", action="store_true", help="Enable Opus critic step between answer and revision")
     args = parser.parse_args()
 
     answer_prompt = args.prompt if args.prompt else DEFAULT_PROMPT
@@ -328,7 +220,7 @@ def main():
     results = []
     with ThreadPoolExecutor(max_workers=args.parallelism) as pool:
         futures = {
-            pool.submit(run_one, i, ex, args.model, args.tools, exp_id, answer_prompt, args.effort, args.critic): i
+            pool.submit(run_one, i, ex, args.model, args.tools, exp_id, answer_prompt, args.effort): i
             for i, ex in subset
         }
         for future in as_completed(futures):
@@ -351,7 +243,6 @@ def main():
         "model": args.model,
         "tools": tools_label,
         "effort": args.effort or "default",
-        "critic": args.critic,
         "prompt": answer_prompt,
         "subset_indices": indices,
         "seed": args.seed,

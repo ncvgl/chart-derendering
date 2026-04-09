@@ -1,0 +1,30 @@
+{
+  "experiment_id": "20260409_1847_q28_sonnet_critic_v2",
+  "model": "sonnet",
+  "tools": "Read,Bash",
+  "effort": "default",
+  "critic": true,
+  "prompt": "Look at the chart image at {img_path}.\n\nQuestion: {question}\n\nYou have a crop tool to zoom into any region of the image at native resolution:\n  python3 /Users/mugen/Codebase/chart_derendering/crop.py {img_path} x1 y1 x2 y2 /tmp/crop.png\nThen Read /tmp/crop.png to inspect the cropped area. Use unique filenames for multiple crops.\n\nProvide your answer concisely. Use this format:\n\n<think>\n... your reasoning ...\n</think>\n<answer>\n... your final answer ...\n</answer>",
+  "subset_indices": [
+    28
+  ],
+  "seed": 42,
+  "score": 0,
+  "total": 1,
+  "accuracy": 0.0,
+  "results": [
+    {
+      "index": 28,
+      "session_id": "q28",
+      "session_file": "sessions/q28.json",
+      "image": "images/VOTD.png",
+      "question": "During which day of the week does the paper plane show the highest range of flying distance?",
+      "gold": "Friday",
+      "prediction": "Tuesday",
+      "correct": false,
+      "num_turns": 16,
+      "answer_time": 448.6,
+      "judge_time": 4.0
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "experiment_id": "20260409_1638_q13_sonnet_bash_run2",
+  "model": "sonnet",
+  "tools": "Read,Bash",
+  "effort": "default",
+  "prompt": "Look at the chart image at {img_path}.\n\nQuestion: {question}\n\nYou have a crop tool to zoom into any region of the image at native resolution:\n  python3 /Users/mugen/Codebase/chart_derendering/crop.py {img_path} x1 y1 x2 y2 /tmp/crop.png\nThen Read /tmp/crop.png to inspect the cropped area. Use unique filenames for multiple crops.\n\nProvide your answer concisely. Use this format:\n\n<think>\n... your reasoning ...\n</think>\n<answer>\n... your final answer ...\n</answer>",
+  "subset_indices": [
+    13
+  ],
+  "seed": 42,
+  "score": 1,
+  "total": 1,
+  "accuracy": 1.0,
+  "results": [
+    {
+      "index": 13,
+      "session_id": "q13",
+      "session_file": "sessions/q13.json",
+      "image": "images/countryDrink.png",
+      "question": "Which country shows the most dramatic drop in the percentage of spirits consumption in a very short period of time?",
+      "gold": "Costa Rica",
+      "prediction": "Costa Rica. The chart shows spirits (blue) dominating nearly 80-90% of its alcohol consumption from 1965 through the late 1990s, then plummeting dramatically around 2000-2005 to roughly 40-50% \u2014 a drop of approximately 40 percentage points in just a few years, making it by far the most sudden and steep decline in spirits consumption among the countries shown.",
+      "correct": true,
+      "num_turns": 14,
+      "answer_time": 83.6,
+      "judge_time": 6.7
+    }
+  ]
+}
