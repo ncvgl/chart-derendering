@@ -2,7 +2,7 @@
 FINAL LEADERBOARD — ChartMuseum visual dev (83 questions, 0 timeouts)
 ================================================================================
 
-60/83 (72.3%) | sonnet | Read+Bash (with Read fallback for stalling images) | merged across retries
+63/83 (75.9%) | sonnet | Read+Bash (with Read fallback for stalling images) | merged across retries (+q74,q75,q76 from sequential run)
 45/83 (54.2%) | sonnet | Read + Devils Advocate (two-pass challenge) | 1 timeout remaining
 44/83 (53.0%) | sonnet | Read only (with stall retries) | corrected from raw 39/83
 40/83 (48.2%) | sonnet | Read + Decompose ("describe then answer") | 0 timeouts
