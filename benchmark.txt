@@ -26,3 +26,5 @@
 2/10 (20.0%) | 2026-04-10 03:00 | 20260410_0221_da_bash_10hard | model=sonnet | tools=Read,Bash | effort=default | n=10 seed=42 | 38m45s
 4/10 (40.0%) | 2026-04-10 03:05 | 20260410_0300_decompose_10hard | model=sonnet | tools=Read | effort=default | n=10 seed=42 | 5m03s
 40/83 (48.2%) | 2026-04-10 03:39 | 20260410_0306_sonnet_decompose_full83 | model=sonnet | tools=Read | effort=default | n=83 seed=42 | 33m58s
+4/8 (50.0%) | 2026-04-10 19:11 | 20260410_1845_read_fallback_8 | model=sonnet | tools=Read | effort=default | n=8 seed=42 | 25m30s
+1/1 (100.0%) | 2026-04-10 19:22 | 20260410_1921_q46_read_fallback | model=sonnet | tools=Read | effort=default | n=1 seed=42 | 0m44s

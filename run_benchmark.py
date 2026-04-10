@@ -166,10 +166,21 @@ def run_claude(cmd, timeout=300):
     for attempt in range(1 + MAX_STALL_RETRIES):
         t0 = time.time()
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
-            raw_output = result.stdout
-        except subprocess.TimeoutExpired:
-            raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
+            import signal
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                                    start_new_session=True)
+            try:
+                stdout, stderr = proc.communicate(timeout=timeout)
+                raw_output = stdout
+            except subprocess.TimeoutExpired:
+                # Kill entire process group
+                try:
+                    os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                except (ProcessLookupError, PermissionError):
+                    proc.kill()
+                # Drain pipes to avoid deadlock, then wait
+                stdout, stderr = proc.communicate(timeout=10)
+                raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
         except Exception as e:
             raw_output = json.dumps({"type": "result", "result": f"ERROR: {e}", "is_error": True})
         elapsed = time.time() - t0
@@ -184,7 +195,7 @@ def run_claude(cmd, timeout=300):
     return raw_output, total_time
 
 
-def run_one(idx, example, model, tools, exp_id, answer_prompt, effort, critic=False, devils_advocate=False):
+def run_one(idx, example, model, tools, exp_id, answer_prompt, effort, critic=False, devils_advocate=False, timeout=300):
     """Run a single question and return result dict."""
     img_path = os.path.join(BASE_DIR, "data/chartmuseum", example['image'])
     question = example['question']
@@ -209,7 +220,7 @@ def run_one(idx, example, model, tools, exp_id, answer_prompt, effort, critic=Fa
     cmd.extend(["--", prompt])
 
     # Step 1: Run answerer
-    raw_output, answer_time = run_claude(cmd)
+    raw_output, answer_time = run_claude(cmd, timeout=timeout)
     answer_text, session = parse_stream_json(raw_output)
     pred = extract_answer(answer_text)
 
@@ -231,7 +242,7 @@ def run_one(idx, example, model, tools, exp_id, answer_prompt, effort, critic=Fa
             da_cmd.extend(["--effort", effort])
         da_cmd.extend(["--", da_prompt])
 
-        da_raw, da_time = run_claude(da_cmd)
+        da_raw, da_time = run_claude(da_cmd, timeout=timeout)
         da_text, da_session = parse_stream_json(da_raw)
         answer_time += da_time
 
@@ -274,7 +285,7 @@ def run_one(idx, example, model, tools, exp_id, answer_prompt, effort, critic=Fa
                 revise_cmd.extend(["--effort", effort])
             revise_cmd.extend(["--", revise_prompt])
 
-            revise_raw, revise_time = run_claude(revise_cmd)
+            revise_raw, revise_time = run_claude(revise_cmd, timeout=timeout)
             revise_text, revise_session = parse_stream_json(revise_raw)
             answer_time += revise_time
 
@@ -331,6 +342,7 @@ def main():
     parser.add_argument("--seed", type=int, default=42, help="Random seed for subset selection")
     parser.add_argument("--prompt", default=None, help="Custom answer prompt (use {img_path} and {question} placeholders)")
     parser.add_argument("--effort", default=None, choices=["low", "medium", "high", "max"], help="Effort/thinking level")
+    parser.add_argument("--timeout", type=int, default=300, help="Timeout per claude -p call in seconds (default 300)")
     parser.add_argument("--critic", action="store_true", help="Enable Opus critic step between answer and revision")
     parser.add_argument("--devils-advocate", action="store_true", help="Two-pass: answer then challenge with devil's advocate")
     args = parser.parse_args()
@@ -370,7 +382,7 @@ def main():
     results = []
     with ThreadPoolExecutor(max_workers=args.parallelism) as pool:
         futures = {
-            pool.submit(run_one, i, ex, args.model, args.tools, exp_id, answer_prompt, args.effort, args.critic, args.devils_advocate): i
+            pool.submit(run_one, i, ex, args.model, args.tools, exp_id, answer_prompt, args.effort, args.critic, args.devils_advocate, args.timeout): i
             for i, ex in subset
         }
         for future in as_completed(futures):
