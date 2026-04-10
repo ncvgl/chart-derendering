@@ -23,3 +23,6 @@
 5/9 (55.6%) | 2026-04-09 23:48 | 20260409_2322_sonnet_read_stall_retries | model=sonnet | tools=Read | effort=default | n=9 seed=42 | 25m49s
 7/22 (31.8%) | 2026-04-10 01:30 | 20260409_2322_sonnet_bash_stall_retries | model=sonnet | tools=Read,Bash | effort=default | n=22 seed=42 | 127m52s
 45/83 (54.2%) | 2026-04-10 02:20 | 20260410_0003_sonnet_devils_advocate_full83 | model=sonnet | tools=Read | effort=default | n=83 seed=42 | 136m54s
+2/10 (20.0%) | 2026-04-10 03:00 | 20260410_0221_da_bash_10hard | model=sonnet | tools=Read,Bash | effort=default | n=10 seed=42 | 38m45s
+4/10 (40.0%) | 2026-04-10 03:05 | 20260410_0300_decompose_10hard | model=sonnet | tools=Read | effort=default | n=10 seed=42 | 5m03s
+40/83 (48.2%) | 2026-04-10 03:39 | 20260410_0306_sonnet_decompose_full83 | model=sonnet | tools=Read | effort=default | n=83 seed=42 | 33m58s
