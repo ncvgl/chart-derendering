@@ -1,30 +1,47 @@
-0/10 (0.0%) | 2026-04-09 13:52 | 20260409_1351_haiku_blind | model=haiku | tools=none | effort=default | n=10 seed=42
-0/10 (0.0%) | 2026-04-09 14:09 | 20260409_1408_haiku_blind_guess | model=haiku | tools=none | effort=default | n=10 seed=42
-3/10 (30.0%) | 2026-04-09 14:33 | 20260409_1432_haiku_read | model=haiku | tools=Read | effort=default | n=10 seed=42
-7/10 (70.0%) | 2026-04-09 14:41 | 20260409_1438_sonnet_read | model=sonnet | tools=Read | effort=default | n=10 seed=42
-6/10 (60.0%) | 2026-04-09 14:43 | 20260409_1441_opus_read | model=opus | tools=Read | effort=default | n=10 seed=42
+================================================================================
+FINAL LEADERBOARD — ChartMuseum visual dev (83 questions, 0 timeouts)
+================================================================================
+
+60/83 (72.3%) | sonnet | Read+Bash (with Read fallback for stalling images) | merged across retries
+45/83 (54.2%) | sonnet | Read + Devils Advocate (two-pass challenge) | 1 timeout remaining
+44/83 (53.0%) | sonnet | Read only (with stall retries) | corrected from raw 39/83
+40/83 (48.2%) | sonnet | Read + Decompose ("describe then answer") | 0 timeouts
+
+================================================================================
+10-QUESTION SUBSET COMPARISONS (seed=42)
+================================================================================
+
+7/10 (70.0%) | sonnet | Read only
+7/10 (70.0%) | sonnet | Read only (v2, variance test — same score, 2/10 flipped)
+6/10 (60.0%) | opus   | Read only
+5/10 (50.0%) | opus   | Read only | effort=max
+4/10 (40.0%) | opus   | Read only | effort=low
+3/10 (30.0%) | haiku  | Read only
+0/10 (0.0%)  | haiku  | no tools (blind)
+0/10 (0.0%)  | haiku  | no tools (blind, forced to guess)
+
+================================================================================
+PER-QUESTION DEEP DIVES
+================================================================================
+
+q13 (Costa Rica): sonnet+Bash 2/3 correct (needs 14-28 turns, legend verification critical)
+q13 (Costa Rica): haiku+Bash 0/3 (can't self-correct color misidentification)
+q28 (Friday): opus critic with image → sonnet revision got it (range vs average confusion)
+q6  (NBA 4 teams): opus critic retry got it
+
+================================================================================
+RAW EXPERIMENT LOG
+================================================================================
+
+0/10 (0.0%) | 2026-04-09 13:52 | 20260409_1351_haiku_blind | model=haiku | tools=none | n=10 seed=42
+0/10 (0.0%) | 2026-04-09 14:09 | 20260409_1408_haiku_blind_guess | model=haiku | tools=none | n=10 seed=42
+3/10 (30.0%) | 2026-04-09 14:33 | 20260409_1432_haiku_read | model=haiku | tools=Read | n=10 seed=42
+7/10 (70.0%) | 2026-04-09 14:41 | 20260409_1438_sonnet_read | model=sonnet | tools=Read | n=10 seed=42
+6/10 (60.0%) | 2026-04-09 14:43 | 20260409_1441_opus_read | model=opus | tools=Read | n=10 seed=42
 4/10 (40.0%) | 2026-04-09 14:44 | 20260409_1443_opus_read_low_effort | model=opus | tools=Read | effort=low | n=10 seed=42
 5/10 (50.0%) | 2026-04-09 14:47 | 20260409_1444_opus_read_max_effort | model=opus | tools=Read | effort=max | n=10 seed=42
-7/10 (70.0%) | 2026-04-09 14:59 | 20260409_1455_sonnet_read_v2 | model=sonnet | tools=Read | effort=default | n=10 seed=42 | 3m41s
-1/1 (100.0%) | 2026-04-09 16:38 | 20260409_1633_q13_sonnet_bash_run1 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 4m58s
-1/1 (100.0%) | 2026-04-09 16:39 | 20260409_1638_q13_sonnet_bash_run2 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 1m30s
-0/1 (0.0%) | 2026-04-09 16:44 | 20260409_1639_q13_sonnet_bash_run3 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 5m04s
-0/1 (0.0%) | 2026-04-09 16:55 | 20260409_1654_q13_haiku_bash_run1 | model=haiku | tools=Read,Bash | effort=default | n=1 seed=42 | 1m03s
-0/1 (0.0%) | 2026-04-09 16:56 | 20260409_1655_q13_haiku_bash_run2 | model=haiku | tools=Read,Bash | effort=default | n=1 seed=42 | 1m07s
-0/1 (0.0%) | 2026-04-09 16:58 | 20260409_1656_q13_haiku_bash_run3 | model=haiku | tools=Read,Bash | effort=default | n=1 seed=42 | 2m35s
-7/10 (70.0%) | 2026-04-09 17:10 | 20260409_1703_sonnet_read_bash | model=sonnet | tools=Read,Bash | effort=default | n=10 seed=42 | 6m50s
-0/1 (0.0%) | 2026-04-09 18:46 | 20260409_1840_q28_sonnet_critic | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 6m24s
-0/1 (0.0%) | 2026-04-09 18:54 | 20260409_1847_q28_sonnet_critic_v2 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 7m32s
-39/83 (47.0%) | 2026-04-09 19:45 | 20260409_1910_sonnet_read_full83 | model=sonnet | tools=Read | effort=default | n=83 seed=42 | 34m22s
-6/10 (60.0%) | 2026-04-09 19:54 | 20260409_1945_sonnet_crop_10failures | model=sonnet | tools=Read,Bash | effort=default | n=10 seed=42 | 8m36s
-1/4 (25.0%) | 2026-04-09 20:00 | 20260409_1954_sonnet_critic_remaining4 | model=sonnet | tools=Read,Bash | effort=default | n=4 seed=42 | 6m29s
-44/83 (53.0%) | 2026-04-09 20:55 | 20260409_2001_sonnet_bash_full83 | model=sonnet | tools=Read,Bash | effort=default | n=83 seed=42 | 53m54s
-1/1 (100.0%) | 2026-04-09 23:47 | 20260409_2323_q6_sonnet_critic_retry | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 24m15s
-5/9 (55.6%) | 2026-04-09 23:48 | 20260409_2322_sonnet_read_stall_retries | model=sonnet | tools=Read | effort=default | n=9 seed=42 | 25m49s
-7/22 (31.8%) | 2026-04-10 01:30 | 20260409_2322_sonnet_bash_stall_retries | model=sonnet | tools=Read,Bash | effort=default | n=22 seed=42 | 127m52s
-45/83 (54.2%) | 2026-04-10 02:20 | 20260410_0003_sonnet_devils_advocate_full83 | model=sonnet | tools=Read | effort=default | n=83 seed=42 | 136m54s
-2/10 (20.0%) | 2026-04-10 03:00 | 20260410_0221_da_bash_10hard | model=sonnet | tools=Read,Bash | effort=default | n=10 seed=42 | 38m45s
-4/10 (40.0%) | 2026-04-10 03:05 | 20260410_0300_decompose_10hard | model=sonnet | tools=Read | effort=default | n=10 seed=42 | 5m03s
-40/83 (48.2%) | 2026-04-10 03:39 | 20260410_0306_sonnet_decompose_full83 | model=sonnet | tools=Read | effort=default | n=83 seed=42 | 33m58s
-4/8 (50.0%) | 2026-04-10 19:11 | 20260410_1845_read_fallback_8 | model=sonnet | tools=Read | effort=default | n=8 seed=42 | 25m30s
-1/1 (100.0%) | 2026-04-10 19:22 | 20260410_1921_q46_read_fallback | model=sonnet | tools=Read | effort=default | n=1 seed=42 | 0m44s
+7/10 (70.0%) | 2026-04-09 14:59 | 20260409_1455_sonnet_read_v2 | model=sonnet | tools=Read | n=10 seed=42 | 3m41s
+39/83 (47.0%) | 2026-04-09 19:45 | 20260409_1910_sonnet_read_full83 | model=sonnet | tools=Read | n=83 seed=42 | 34m22s (9 stall timeouts)
+44/83 (53.0%) | 2026-04-09 20:55 | 20260409_2001_sonnet_bash_full83 | model=sonnet | tools=Read,Bash | n=83 seed=42 | 53m54s (22 stall timeouts)
+45/83 (54.2%) | 2026-04-10 02:20 | 20260410_0003_sonnet_devils_advocate_full83 | model=sonnet | tools=Read | n=83 seed=42 | 136m54s
+40/83 (48.2%) | 2026-04-10 03:39 | 20260410_0306_sonnet_decompose_full83 | model=sonnet | tools=Read | n=83 seed=42 | 33m58s
