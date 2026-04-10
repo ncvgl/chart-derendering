@@ -1,0 +1,95 @@
+================================================================================
+METHODICAL APPROACH — Plan, Compute, Annotate, Answer
+================================================================================
+
+CONCEPT
+  Instead of "look at image and answer," force the model to:
+  1. ANALYZE — Read the chart, identify chart type, axes, legend, colors
+  2. PLAN — Design a computational method to answer the question
+     (e.g. "trace line positions, detect crossings" or "measure bar heights")
+  3. EXECUTE — Write Python scripts to analyze pixels, measure values,
+     annotate the image with findings (markers, rectangles, reference lines)
+  4. ANSWER — Provide answer grounded in computation, not visual impression
+
+WHY IT WORKS
+  The model's main failure mode is visual perception — it can't distinguish
+  lines 8-16 pixels apart, misidentifies colors, confuses "range" with
+  "average." Computation eliminates these errors by turning visual tasks
+  into numeric tasks. The annotation step creates a visual artifact that
+  anchors the model's reasoning and is inspectable by humans.
+
+TESTED ON
+  q56 (supreme_court_approval.png)
+  Question: "How many different time periods show the Supreme Court's
+  disapproval rating lower than its approval rating?"
+  Gold: 3
+
+  Previous results on q56:
+    Read only:          0 (wrong — "disapproval always above")
+    Grid 3x3 + Read:    0 (wrong — same error with better resolution)
+    Annotated overlay:   1 (closer — saw 1 crossing but missed 2 subtle ones)
+    Read+Bash (old):     3 (correct, but 35 turns, 227s, no structured method)
+    Methodical:          3 (correct, 21 turns, 282s, structured computation)
+
+WHAT THE MODEL DID (q56 session analysis)
+  Wrote 9 Python scripts across 21 turns:
+  1. Inspected image dimensions and background colors
+  2. Created color masks for pink (disapprove) and green (approve) lines
+  3. Refined color detection with Euclidean distance from target RGB values
+  4. For each of 880 x-columns, found median y-position of each line
+  5. Flagged columns where approve line is above disapprove line
+  6. Grouped into 3 contiguous segments:
+     - Segment 1: cols 70-127 (~Jun-Sep 2021), 77px separation
+     - Segment 2: cols 271-329 (~Feb-May 2022), 16-24px separation
+     - Segment 3: cols 584-626 (~Mar-May 2023), 8-16px separation
+  7. Calibrated x-axis labels to map columns to dates
+  8. Annotated image with blue rectangles and fill between lines
+  9. Zoomed 4x into each segment to visually verify crossovers
+
+  Artifacts produced:
+    /tmp/supreme_court_annotated_v2.png — full annotated chart
+    /tmp/seg1_zoom.png, seg2_zoom.png, seg3_zoom.png — 4x zooms
+
+KEY INSIGHT
+  Segment 3 is only ~42 pixels wide with 8-16px line separation.
+  Every visual-only approach missed it. The computation detected it
+  because it measures exact y-positions, not eyeballing.
+
+COMPARISON TO OTHER APPROACHES
+  - Read only (53%): Fast but limited by visual perception
+  - Read+Bash old (75.9%): Model crops and eyeballs, sometimes writes
+    scripts ad-hoc. Gets there eventually but unstructured — 35 turns
+    of trial and error
+  - Methodical: Same tools (Read+Bash) but structured prompt forces
+    plan-first approach. More efficient (21 vs 35 turns) and the
+    annotation creates an inspectable reasoning trace
+
+PROMPT USED
+  "You are a chart analysis agent. Your goal is to answer a question
+  about a chart image, but you must NOT answer from visual impression
+  alone. Instead, follow this process:
+
+  STEP 1 — ANALYZE: Read the chart image. Understand chart type, axes,
+  legend. Crop regions if needed for detail.
+
+  STEP 2 — PLAN: Plan a computational method to find the answer.
+
+  STEP 3 — EXECUTE: Use Bash to write Python scripts that analyze the
+  image programmatically. Annotate the image with findings. Then Read
+  the annotated image to verify visually.
+
+  STEP 4 — ANSWER: Provide answer grounded in computation and
+  annotations, not from visual impression."
+
+STATUS
+  Tested on 1 question (q56). Needs testing on the 10 hardest failures
+  and then full 83 to see if it improves on Read+Bash (75.9%) without
+  hurting easy questions. Risk: the structured prompt adds overhead on
+  simple questions that Read-only already handles correctly.
+
+NEXT STEPS
+  - Test on 10 hardest failures to measure improvement
+  - Run full 83 to get overall score
+  - Compare: does the computation overhead hurt easy questions?
+  - Investigate: can the model do parallel tool calls (batch crops)
+    to reduce the API latency bottleneck?
