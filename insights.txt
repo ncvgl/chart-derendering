@@ -1,0 +1,85 @@
+================================================================================
+INSIGHTS — ChartMuseum Visual QA Experiments (April 9-10, 2026)
+================================================================================
+
+FINAL RESULTS
+  Sonnet + Read,Bash:       60/83 (72.3%)  — best overall
+  Sonnet + Devils Advocate: 45/83 (54.2%)  — best reliable (Read-only)
+  Sonnet + Read only:       44/83 (53.0%)  — baseline
+  Sonnet + Decompose:       40/83 (48.2%)  — hurt easy questions
+
+KEY FINDINGS
+
+1. Tools > prompt engineering. Read+Bash adds +19% over Read-only (72% vs 53%).
+   All prompt-only techniques (decompose, devil's advocate) cluster at 40-54%.
+   The crop tool lets the model zoom into chart regions at native resolution,
+   which is the single biggest accuracy driver.
+
+2. ~20% of answers are stochastic. On identical reruns, ~2/10 questions flip
+   between correct/incorrect. Overall score stays stable but individual answers
+   vary. (Observed: sonnet_read v1 and v2 both scored 7/10 but on different questions.)
+
+3. Legend misidentification is the #1 failure mode. Models assume colors
+   (e.g. pink=spirits) without checking the legend. When they verify via
+   cropping the legend, accuracy jumps. q13 (Costa Rica): all models say Cuba
+   until they crop and read the legend — then they self-correct.
+
+4. Claude downsamples images >1568px on the long edge. Charts wider than
+   1568px lose detail. The crop tool bypasses this by extracting sub-regions
+   at native resolution — "zoom with intent."
+
+5. Sonnet > Opus on this benchmark. Sonnet+Read (70% on 10-subset) beats
+   Opus+Read (60%). Opus effort levels don't help: low=40%, default=60%, max=50%.
+
+6. Haiku cannot self-correct. With Bash tools, Sonnet verifies legends and
+   fixes color misidentifications (2/3 on q13). Haiku never checks the legend
+   and gets q13 wrong 3/3 times despite having the same tools.
+
+APPROACH-SPECIFIC FINDINGS
+
+7. Devil's advocate (two-pass challenge): Flips ~2/10 hard failures by forcing
+   the model to consider alternatives. Simple, Read-only, near-zero timeouts.
+   But also flips ~11/83 correct answers to wrong (net +6 over baseline).
+
+8. Structured decomposition ("describe then answer"): Best on 10 hardest
+   failures (4/10) but hurts easy questions at scale (+1 net over baseline).
+   The description step sometimes introduces errors.
+
+9. Opus critic pattern (Sonnet answers → Opus critiques → Sonnet revises):
+   Works when Opus has image access and can point to specific visual elements.
+   Text-only critic catches reasoning errors but Sonnet can't act on vague
+   advice. Tested on q28 (range vs average) and q6 (NBA playoffs) — both
+   corrected.
+
+INFRASTRUCTURE FINDINGS
+
+10. subprocess.communicate(timeout) doesn't kill child process trees on macOS.
+    Claude CLI spawns MCP servers/node processes that survive the timeout.
+    Fix: Popen(start_new_session=True) + os.killpg() + drain pipes after kill.
+
+11. 300s timeout is too short for Read+Bash. Complex charts take 20-40 turns
+    of crop/read (up to 500s). 600s timeout with 2 retries and 10s/20s backoff
+    eliminates most timeouts.
+
+12. Some large images (>2MB, >2500px) consistently stall with Bash tool
+    initialization. Read-only works fine on the same images. Use Read-only
+    fallback for persistent Bash stallers.
+
+13. Rate limiting at high parallelism causes stall timeouts (0 events, CLI
+    never initializes). Parallelism 2-3 is the sweet spot. Parallelism 5
+    causes 22/83 stalls vs 9/83 with Read-only.
+
+PER-QUESTION CASE STUDIES
+
+q13 (countryDrink.png — Costa Rica): Legend verification is critical. Without
+    it, all models say Cuba (wrong color mapping). With Bash + 24 turns,
+    Sonnet crops legend, corrects colors, and finds Costa Rica. Haiku can't
+    do this — wrong color mapping in all 3 attempts.
+
+q28 (VOTD.png — Friday): Models confuse "range" (spread) with "average" and
+    read Tuesday=508 from the radar chart. Opus critic with image access
+    points to the trajectory arcs — Sonnet then analyzes individual throws
+    and finds Friday has the widest spread. 31 turns, 234s.
+
+q6  (NBAmissPlayOffs.png — 4 teams): Consistently stalls with Bash but
+    Opus critic with image access got it correct on retry.
