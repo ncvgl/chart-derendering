@@ -115,10 +115,10 @@ Respond with only "Yes" or "No"."""
 
 
 def extract_answer(text):
-    """Extract answer from <answer> tags, or return last line."""
-    match = re.search(r'<answer>\s*(.*?)\s*</answer>', text, re.DOTALL | re.IGNORECASE)
-    if match:
-        return match.group(1).strip()
+    """Extract answer from last <answer> tag (model may self-correct), or return last line."""
+    matches = re.findall(r'<answer>\s*(.*?)\s*</answer>', text, re.DOTALL | re.IGNORECASE)
+    if matches:
+        return matches[-1].strip()
     lines = [l.strip() for l in text.split('\n') if l.strip()]
     return lines[-1] if lines else text
 
