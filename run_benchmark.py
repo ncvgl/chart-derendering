@@ -154,27 +154,45 @@ def is_stall_timeout(raw_output):
     return len(session["events"]) == 0 and session["system"] is None
 
 
+STARTUP_TIMEOUT = 30  # seconds to wait for first output before declaring a stall
+
 def run_claude(cmd, timeout=300):
-    """Run a claude -p command with retry on stall timeouts."""
+    """Run a claude -p command with fast stall detection and retry."""
+    import signal, selectors
     total_time = 0
     for attempt in range(1 + MAX_STALL_RETRIES):
         t0 = time.time()
         try:
-            import signal
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
                                     start_new_session=True)
-            try:
-                stdout, stderr = proc.communicate(timeout=timeout)
-                raw_output = stdout
-            except subprocess.TimeoutExpired:
-                # Kill entire process group
+
+            # Fast stall detection: check if any stdout arrives within STARTUP_TIMEOUT
+            sel = selectors.DefaultSelector()
+            sel.register(proc.stdout, selectors.EVENT_READ)
+            ready = sel.select(timeout=STARTUP_TIMEOUT)
+            sel.close()
+
+            if not ready:
+                # No output at all — stall detected, kill fast
                 try:
                     os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
                 except (ProcessLookupError, PermissionError):
                     proc.kill()
-                # Drain pipes to avoid deadlock, then wait
-                stdout, stderr = proc.communicate(timeout=10)
+                proc.communicate(timeout=10)
                 raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
+            else:
+                # CLI started producing output — read everything with full timeout
+                # The selector confirmed data is available but didn't consume it
+                try:
+                    stdout, stderr = proc.communicate(timeout=timeout)
+                    raw_output = stdout
+                except subprocess.TimeoutExpired:
+                    try:
+                        os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                    except (ProcessLookupError, PermissionError):
+                        proc.kill()
+                    stdout, stderr = proc.communicate(timeout=10)
+                    raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
         except Exception as e:
             raw_output = json.dumps({"type": "result", "result": f"ERROR: {e}", "is_error": True})
         elapsed = time.time() - t0
