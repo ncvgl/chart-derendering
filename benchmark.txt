@@ -1,8 +1,9 @@
 ================================================================================
-FINAL LEADERBOARD — ChartMuseum visual dev (83 questions, 0 timeouts)
+FINAL LEADERBOARD — ChartMuseum visual dev (83 questions)
 ================================================================================
 
-63/83 (75.9%) | sonnet | Read+Bash (with Read fallback for stalling images) | merged across retries (+q74,q75,q76 from sequential run)
+71/83 (85.5%) | sonnet | Read+Bash+Plan (methodical: analyze→plan→compute→annotate→answer) | 6 wrong, 6 stall timeouts remaining
+63/83 (75.9%) | sonnet | Read+Bash (no planning prompt) | merged across retries
 45/83 (54.2%) | sonnet | Read + Devils Advocate (two-pass challenge) | 1 timeout remaining
 44/83 (53.0%) | sonnet | Read only (with stall retries) | corrected from raw 39/83
 40/83 (48.2%) | sonnet | Read + Decompose ("describe then answer") | 0 timeouts
@@ -45,3 +46,5 @@ RAW EXPERIMENT LOG
 44/83 (53.0%) | 2026-04-09 20:55 | 20260409_2001_sonnet_bash_full83 | model=sonnet | tools=Read,Bash | n=83 seed=42 | 53m54s (22 stall timeouts)
 45/83 (54.2%) | 2026-04-10 02:20 | 20260410_0003_sonnet_devils_advocate_full83 | model=sonnet | tools=Read | n=83 seed=42 | 136m54s
 40/83 (48.2%) | 2026-04-10 03:39 | 20260410_0306_sonnet_decompose_full83 | model=sonnet | tools=Read | n=83 seed=42 | 33m58s
+1/1 (100.0%) | 2026-04-10 21:01 | 20260410_2056_q56_methodical | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 4m50s
+7/17 (41.2%) | 2026-04-11 13:12 | 20260411_1204_methodical_remaining17 | model=sonnet | tools=Read,Bash | effort=default | n=17 seed=42 | 67m53s
