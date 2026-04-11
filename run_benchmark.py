@@ -154,7 +154,8 @@ def is_stall_timeout(raw_output):
     return len(session["events"]) == 0 and session["system"] is None
 
 
-FIRST_RESPONSE_TIMEOUT = 60  # seconds to wait for first model response after startup
+FIRST_RESPONSE_TIMEOUT = 60   # seconds to wait for first model response after startup
+IDLE_TIMEOUT = 180            # seconds of no stdout before declaring mid-session hang
 
 def run_claude(cmd, timeout=300):
     """Run a claude -p command with timeout. Uses a reader thread to avoid blocking."""
@@ -166,18 +167,26 @@ def run_claude(cmd, timeout=300):
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
                                     start_new_session=True)
 
-            # Reader thread collects stdout and signals when first assistant event arrives
+            # Reader thread collects stdout and tracks activity
             output_lines = []
             got_assistant = threading.Event()
+            last_activity = [time.time()]  # mutable so thread can update it
 
             def reader():
                 for line in proc.stdout:
                     output_lines.append(line)
+                    last_activity[0] = time.time()
                     if '"type":"assistant"' in line or '"type": "assistant"' in line:
                         got_assistant.set()
 
+            def stderr_drain():
+                for _ in proc.stderr:
+                    pass
+
             t = threading.Thread(target=reader, daemon=True)
+            t_err = threading.Thread(target=stderr_drain, daemon=True)
             t.start()
+            t_err.start()
 
             # Wait for first assistant response (fast hang detection)
             if not got_assistant.wait(timeout=FIRST_RESPONSE_TIMEOUT):
@@ -190,22 +199,36 @@ def run_claude(cmd, timeout=300):
                 t.join(timeout=5)
                 raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
             else:
-                # Model started responding — wait for thread to finish (process to complete)
-                remaining = max(timeout - (time.time() - t0), 10)
-                t.join(timeout=remaining)
-                if t.is_alive():
-                    # Thread still blocked on readline — process exceeded timeout, kill it
-                    try:
-                        os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
-                    except (ProcessLookupError, PermissionError):
-                        proc.kill()
-                    proc.wait()
-                    t.join(timeout=5)  # thread should exit now that process is dead
-                    raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
-                else:
-                    # Thread finished — process completed normally
-                    proc.wait()
-                    raw_output = ''.join(output_lines)
+                # Model started responding — poll for activity or completion
+                while True:
+                    t.join(timeout=10)  # check every 10s
+                    if not t.is_alive():
+                        # Process completed normally
+                        proc.wait()
+                        raw_output = ''.join(output_lines)
+                        break
+                    idle = time.time() - last_activity[0]
+                    elapsed = time.time() - t0
+                    if idle > IDLE_TIMEOUT:
+                        # No output for 60s — mid-session hang, kill
+                        try:
+                            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                        except (ProcessLookupError, PermissionError):
+                            proc.kill()
+                        proc.wait()
+                        t.join(timeout=5)
+                        raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
+                        break
+                    if elapsed > timeout:
+                        # Full timeout exceeded
+                        try:
+                            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                        except (ProcessLookupError, PermissionError):
+                            proc.kill()
+                        proc.wait()
+                        t.join(timeout=5)
+                        raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
+                        break
         except Exception as e:
             raw_output = json.dumps({"type": "result", "result": f"ERROR: {e}", "is_error": True})
         elapsed = time.time() - t0
