@@ -154,7 +154,7 @@ def is_stall_timeout(raw_output):
     return len(session["events"]) == 0 and session["system"] is None
 
 
-STARTUP_TIMEOUT = 30  # seconds to wait for first output before declaring a stall
+STARTUP_TIMEOUT = 10  # seconds to wait for first output before declaring a stall
 
 def run_claude(cmd, timeout=300):
     """Run a claude -p command with fast stall detection and retry."""
