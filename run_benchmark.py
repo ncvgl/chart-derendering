@@ -146,7 +146,7 @@ def parse_stream_json(raw_output):
     return result_text, session
 
 
-MAX_STALL_RETRIES = 2
+MAX_STALL_RETRIES = 0
 
 def is_stall_timeout(raw_output):
     """Check if a timeout was a stall (0 events, never started) vs legitimate."""
