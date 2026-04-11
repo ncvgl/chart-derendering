@@ -22,21 +22,20 @@ DATA_PATH = os.path.join(BASE_DIR, "data/chartmuseum/visual_dev.json")
 EXPERIMENTS_DIR = os.path.join(BASE_DIR, "experiments")
 BENCHMARK_FILE = os.path.join(BASE_DIR, "benchmark.txt")
 
-CROP_TOOL_PATH = os.path.join(BASE_DIR, "crop.py")
+DEFAULT_PROMPT = """You are a chart analysis agent. Your goal is to answer a question about a chart image, but you must NOT answer from visual impression alone. Instead, follow this process:
 
-DEFAULT_PROMPT = """Look at the chart image at {img_path}.
+STEP 1 — ANALYZE: Read the chart image at {img_path}. Understand what type of chart it is, what the axes and legend represent. Crop regions if needed for detail.
+
+STEP 2 — PLAN: Based on the question, plan a computational method to find the answer. For example: if the question asks about crossings, plan to trace line positions and detect sign changes. If it asks about rankings, plan to measure bar heights. Write your plan before executing.
+
+STEP 3 — EXECUTE: Use Bash to write Python scripts that analyze the image programmatically. Measure pixel values, trace lines, count elements, etc. Annotate the image with your findings (draw markers, labels, reference lines) and save it. Then Read the annotated image to verify your computation visually.
+
+STEP 4 — ANSWER: Provide your answer grounded in the computation and annotations, not from visual impression.
+
+You have access to Read and Bash tools. Use python3 with PIL/numpy for image analysis.
 
 Question: {question}
 
-You have a crop tool to zoom into any region of the image at native resolution:
-  python3 """ + CROP_TOOL_PATH + """ {img_path} x1 y1 x2 y2 /tmp/crop.png
-Then Read /tmp/crop.png to inspect the cropped area. Use unique filenames for multiple crops.
-
-Provide your answer concisely. Use this format:
-
-<think>
-... your reasoning ...
-</think>
 <answer>
 ... your final answer ...
 </answer>"""
@@ -82,12 +81,7 @@ You previously answered this question. Here was your response:
 A reviewer found these potential issues with your analysis:
 {critique}
 
-Re-examine the chart with the reviewer's feedback in mind. You have access to the crop tool and can look at specific regions again.
-
-You can crop any region of the image at native resolution using:
-  python3 """ + CROP_TOOL_PATH + """ {img_path} x1 y1 x2 y2 /tmp/crop.png
-Then Read /tmp/crop.png to inspect. Use unique filenames.
-Do NOT use Bash for anything other than running crop.py.
+Re-examine the chart with the reviewer's feedback in mind. Use Bash to write Python scripts for pixel-level analysis if needed. Annotate the image with your findings and Read it to verify.
 
 Provide your revised (or confirmed) answer:
 
