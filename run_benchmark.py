@@ -188,16 +188,22 @@ def run_claude(cmd, timeout=300):
             t.start()
             t_err.start()
 
-            # Wait for first assistant response (fast hang detection)
-            if not got_assistant.wait(timeout=FIRST_RESPONSE_TIMEOUT):
-                # No model response within FIRST_RESPONSE_TIMEOUT — API hang
+            def _kill_and_collect(reason):
+                """Kill process, collect partial output, append timeout marker."""
                 try:
                     os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
                 except (ProcessLookupError, PermissionError):
                     proc.kill()
                 proc.wait()
                 t.join(timeout=5)
-                raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
+                # Keep partial output + append timeout result
+                partial = ''.join(output_lines)
+                timeout_line = json.dumps({"type": "result", "result": f"TIMEOUT ({reason})", "is_error": True})
+                return partial + '\n' + timeout_line if partial else timeout_line
+
+            # Wait for first assistant response (fast hang detection)
+            if not got_assistant.wait(timeout=FIRST_RESPONSE_TIMEOUT):
+                raw_output = _kill_and_collect("no first response in 60s")
             else:
                 # Model started responding — poll for activity or completion
                 while True:
@@ -210,24 +216,10 @@ def run_claude(cmd, timeout=300):
                     idle = time.time() - last_activity[0]
                     elapsed = time.time() - t0
                     if idle > IDLE_TIMEOUT:
-                        # No output for 60s — mid-session hang, kill
-                        try:
-                            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
-                        except (ProcessLookupError, PermissionError):
-                            proc.kill()
-                        proc.wait()
-                        t.join(timeout=5)
-                        raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
+                        raw_output = _kill_and_collect(f"no output for {IDLE_TIMEOUT}s")
                         break
                     if elapsed > timeout:
-                        # Full timeout exceeded
-                        try:
-                            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
-                        except (ProcessLookupError, PermissionError):
-                            proc.kill()
-                        proc.wait()
-                        t.join(timeout=5)
-                        raw_output = json.dumps({"type": "result", "result": "TIMEOUT", "is_error": True})
+                        raw_output = _kill_and_collect(f"exceeded {timeout}s total")
                         break
         except Exception as e:
             raw_output = json.dumps({"type": "result", "result": f"ERROR: {e}", "is_error": True})
