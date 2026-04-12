@@ -48,3 +48,15 @@ RAW EXPERIMENT LOG
 40/83 (48.2%) | 2026-04-10 03:39 | 20260410_0306_sonnet_decompose_full83 | model=sonnet | tools=Read | n=83 seed=42 | 33m58s
 1/1 (100.0%) | 2026-04-10 21:01 | 20260410_2056_q56_methodical | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 4m50s
 7/17 (41.2%) | 2026-04-11 13:12 | 20260411_1204_methodical_remaining17 | model=sonnet | tools=Read,Bash | effort=default | n=17 seed=42 | 67m53s
+1/5 (20.0%) | 2026-04-11 16:50 | 20260411_1604_persistent_stallers_noretry | model=sonnet | tools=Read,Bash | effort=default | n=5 seed=42 | 45m19s
+1/1 (100.0%) | 2026-04-11 16:56 | 20260411_1655_test_readline | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 1m22s
+0/1 (0.0%) | 2026-04-11 17:10 | 20260411_1708_test_thread | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 2m04s
+1/1 (100.0%) | 2026-04-11 17:13 | 20260411_1711_test_thread_v2 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 1m47s
+1/1 (100.0%) | 2026-04-11 17:24 | 20260411_1722_test_thread_v3 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 2m31s
+0/1 (0.0%) | 2026-04-11 17:25 | 20260411_1725_test_kill_fires | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 0m34s
+0/4 (0.0%) | 2026-04-11 18:06 | 20260411_1725_stallers_v3 | model=sonnet | tools=Read,Bash | effort=default | n=4 seed=42 | 40m17s
+0/1 (0.0%) | 2026-04-11 19:54 | 20260411_1949_test_idle_v1 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 5m10s
+0/1 (0.0%) | 2026-04-11 19:59 | 20260411_1954_test_idle_v2 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 5m07s
+1/1 (100.0%) | 2026-04-11 20:04 | 20260411_2003_test_idle_v3 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 1m09s
+0/1 (0.0%) | 2026-04-11 20:15 | 20260411_2013_q45_solo | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 2m08s
+0/1 (0.0%) | 2026-04-11 20:26 | 20260411_2016_q45_stderr_fix | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 10m09s
