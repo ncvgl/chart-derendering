@@ -1,0 +1,8 @@
+Question: Which year saw the greatest overall difference between median expected inflation rate one year and three years ahead?
+
+Gold answer: 2022
+
+Prediction: 2022
+
+Time: 207.4s  Turns: 13
+Experiment: 20260412_1830_retry_q112

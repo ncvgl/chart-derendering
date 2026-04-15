@@ -1,0 +1,8 @@
+Question: Among countries that donated infantry fighting vehicles, which country donated the least for infantry fighting vehicles?
+
+Gold answer: Poland
+
+Prediction: Poland (PL)
+
+Time: 224.3s  Turns: 15
+Experiment: 20260412_1326_sonnet_test50
