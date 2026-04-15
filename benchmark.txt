@@ -46,21 +46,10 @@ RAW EXPERIMENT LOG
 44/83 (53.0%) | 2026-04-09 20:55 | 20260409_2001_sonnet_bash_full83 | model=sonnet | tools=Read,Bash | n=83 seed=42 | 53m54s (22 stall timeouts)
 45/83 (54.2%) | 2026-04-10 02:20 | 20260410_0003_sonnet_devils_advocate_full83 | model=sonnet | tools=Read | n=83 seed=42 | 136m54s
 40/83 (48.2%) | 2026-04-10 03:39 | 20260410_0306_sonnet_decompose_full83 | model=sonnet | tools=Read | n=83 seed=42 | 33m58s
-1/1 (100.0%) | 2026-04-10 21:01 | 20260410_2056_q56_methodical | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 4m50s
 7/17 (41.2%) | 2026-04-11 13:12 | 20260411_1204_methodical_remaining17 | model=sonnet | tools=Read,Bash | effort=default | n=17 seed=42 | 67m53s
-1/5 (20.0%) | 2026-04-11 16:50 | 20260411_1604_persistent_stallers_noretry | model=sonnet | tools=Read,Bash | effort=default | n=5 seed=42 | 45m19s
-1/1 (100.0%) | 2026-04-11 16:56 | 20260411_1655_test_readline | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 1m22s
-0/1 (0.0%) | 2026-04-11 17:10 | 20260411_1708_test_thread | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 2m04s
-1/1 (100.0%) | 2026-04-11 17:13 | 20260411_1711_test_thread_v2 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 1m47s
-1/1 (100.0%) | 2026-04-11 17:24 | 20260411_1722_test_thread_v3 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 2m31s
-0/1 (0.0%) | 2026-04-11 17:25 | 20260411_1725_test_kill_fires | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 0m34s
-0/4 (0.0%) | 2026-04-11 18:06 | 20260411_1725_stallers_v3 | model=sonnet | tools=Read,Bash | effort=default | n=4 seed=42 | 40m17s
-0/1 (0.0%) | 2026-04-11 19:54 | 20260411_1949_test_idle_v1 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 5m10s
-0/1 (0.0%) | 2026-04-11 19:59 | 20260411_1954_test_idle_v2 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 5m07s
-1/1 (100.0%) | 2026-04-11 20:04 | 20260411_2003_test_idle_v3 | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 1m09s
-0/1 (0.0%) | 2026-04-11 20:15 | 20260411_2013_q45_solo | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 2m08s
-0/1 (0.0%) | 2026-04-11 20:26 | 20260411_2016_q45_stderr_fix | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 10m09s
-0/1 (0.0%) | 2026-04-12 01:12 | 20260412_0102_q45_stderr_fixed | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 10m09s
-0/1 (0.0%) | 2026-04-12 01:25 | 20260412_0115_q45_900s | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 10m15s
-0/1 (0.0%) | 2026-04-12 01:49 | 20260412_0134_q48_900s | model=sonnet | tools=Read,Bash | effort=default | n=1 seed=42 | 15m09s
-0/2 (0.0%) | 2026-04-12 02:28 | 20260412_0158_q70_q73_partial_output | model=sonnet | tools=Read,Bash | effort=default | n=2 seed=42 | 30m17s
+19/83 (22.9%) | 2026-04-12 09:23 | 20260412_0749_haiku_dev83 | model=haiku | tools=Read,Bash | effort=default | n=83 seed=42 | 93m40s
+9/50 (18.0%) | 2026-04-12 16:39 | 20260412_1326_sonnet_test50 | model=sonnet | tools=Read,Bash | effort=default | n=50 seed=42 | 192m38s
+
+# === AGGREGATE: sonnet_test50 + retries (excluding timeouts) ===
+# 27/50 raw (54.0%) | 27/34 excluding 16 timeouts (79.4%) | 7 wrong | 16 timeouts (13 retried-still-failed + 3 not retried: q412/q445/q490)
+# Source: 20260412_1326_sonnet_test50 + 27 retry_q* runs (timeout 600s, parallelism 1)
